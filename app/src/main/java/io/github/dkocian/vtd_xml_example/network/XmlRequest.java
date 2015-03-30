@@ -67,6 +67,11 @@ public class XmlRequest<T extends XmlModel> extends Request<ArrayList<T>> {
         vg.setDoc(result.getBytes());
         try {
             vg.parse(true);
+        } catch (ParseException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        try {
+
             VTDNav vn = vg.getNav();
             vn.toElement(VTDNav.ROOT);
             AutoPilot ap = new AutoPilot(vn);
@@ -110,8 +115,6 @@ public class XmlRequest<T extends XmlModel> extends Request<ArrayList<T>> {
                 ++count;
             }
             Log.v(TAG, TOTAL_NUM_OF_ELEMENT + count);
-        } catch (ParseException e) {
-            Log.e(TAG, e.getMessage());
         } catch (PilotException e) {
             Log.e(TAG, e.getMessage());
         } catch (NavException e) {
