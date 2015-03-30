@@ -23,7 +23,7 @@ public class StackOverflowXmlParser {
     private static final String REL = "rel";
     private static final String ALTERNATE = "alternate";
 
-    public List parse(InputStream in) throws XmlPullParserException, IOException {
+    public List<Entry> parse(InputStream in) throws XmlPullParserException, IOException {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -35,8 +35,8 @@ public class StackOverflowXmlParser {
         }
     }
 
-    private List readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List entries = new ArrayList();
+    private List<Entry> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
+        List<Entry> entries = new ArrayList<>();
         parser.require(XmlPullParser.START_TAG, ns, FEED);
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {

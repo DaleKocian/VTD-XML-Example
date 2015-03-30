@@ -1,6 +1,5 @@
 package io.github.dkocian.vtd_xml_example;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +10,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,14 +27,17 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import io.github.dkocian.vtd_xml_example.model.Entry;
 import io.github.dkocian.vtd_xml_example.utils.StackOverflowXmlParser;
 
 /**
  * Created by dkocian on 3/30/2015.
  */
-public class NetworkActivity extends Activity {
+public class NetworkActivity extends ActionBarActivity {
     public static final String WIFI = "Wi-Fi";
     public static final String ANY = "Any";
     private static final String MY_URL = "http://stackoverflow.com/feeds/tag?tagnames=android&sort=newest";
@@ -50,6 +53,8 @@ public class NetworkActivity extends Activity {
     private static boolean mobileConnected = false;
     // The BroadcastReceiver that tracks network connectivity changes.
     private NetworkReceiver receiver = new NetworkReceiver();
+    @InjectView(R.id.webview)
+    protected WebView myWebView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,7 +119,7 @@ public class NetworkActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings:
-                Intent settingsActivity = new Intent(getBaseContext(), SettingsActivity.class);
+                Intent settingsActivity = new Intent(this, SettingsActivity.class);
                 startActivity(settingsActivity);
                 return true;
             case R.id.refresh:
@@ -132,15 +137,15 @@ public class NetworkActivity extends Activity {
         } else if ((sPref.equals(WIFI)) && (wifiConnected)) {
             new DownloadXmlTask().execute(MY_URL);
         } else {
-            // show error
+            showErrorPage();
         }
     }
 
     // Displays an error if the app is unable to load content.
     private void showErrorPage() {
         setContentView(R.layout.network_activity_ui);
+        ButterKnife.inject(this);
         // The specified network connection is not available. Displays error message.
-        WebView myWebView = (WebView) findViewById(R.id.webview);
         myWebView.loadData(getResources().getString(R.string.connection_error), "text/html", null);
     }
 
@@ -151,7 +156,7 @@ public class NetworkActivity extends Activity {
         StackOverflowXmlParser stackOverflowXmlParser = new StackOverflowXmlParser();
         List<Entry> entries = null;
         Calendar rightNow = Calendar.getInstance();
-        DateFormat formatter = new SimpleDateFormat("MMM dd h:mmaa");
+        DateFormat formatter = new SimpleDateFormat("MMM dd h:mmaa", Locale.US);
         // Checks whether the user set the preference to include summary text
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean pref = sharedPrefs.getBoolean("summaryPref", false);
@@ -198,6 +203,15 @@ public class NetworkActivity extends Activity {
         return conn.getInputStream();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (myWebView != null && myWebView.canGoBack()) {
+            myWebView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     // Implementation of AsyncTask used to download XML feed from stackoverflow.com.
     private class DownloadXmlTask extends AsyncTask<String, Void, String> {
         @Override
@@ -214,8 +228,8 @@ public class NetworkActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             setContentView(R.layout.network_activity_ui);
+            ButterKnife.inject(NetworkActivity.this);
             // Displays the HTML string in the UI via a WebView
-            WebView myWebView = (WebView) findViewById(R.id.webview);
             myWebView.loadData(result, "text/html", null);
         }
     }
