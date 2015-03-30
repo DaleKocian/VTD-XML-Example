@@ -8,7 +8,7 @@ import org.json.JSONObject;
 /**
  * Created by dkocian on 3/29/2015.
  */
-public class Entry extends XmlModel {
+public class Entry implements XmlModel {
     private static final String TAG = Entry.class.getName();
     public static final String TITLE = "title";
     public static final String LINK = "link";
