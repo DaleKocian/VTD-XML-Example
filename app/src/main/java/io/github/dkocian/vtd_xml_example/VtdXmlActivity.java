@@ -26,10 +26,10 @@ import butterknife.InjectView;
 import io.github.dkocian.vtd_xml_example.model.Entry;
 import io.github.dkocian.vtd_xml_example.network.XmlRequest;
 import io.github.dkocian.vtd_xml_example.utils.JsonKeys;
+import io.github.dkocian.vtd_xml_example.utils.Urls;
 
 public class VtdXmlActivity extends ActionBarActivity {
     private static final String TAG = VtdXmlActivity.class.getName();
-    private static final String URL = "http://stackoverflow.com/feeds/tag?tagnames=android&sort=newest";
     public static final String PLEASE_WAIT = "Please wait";
     public static final String DOWNLOAD_IN_PROGRESS = "Download in progress..";
     private ProgressDialog mProgressDialog;
@@ -42,7 +42,7 @@ public class VtdXmlActivity extends ActionBarActivity {
         setContentView(R.layout.vtd_xml_ui);
         ButterKnife.inject(this);
         RequestQueue queue = Volley.newRequestQueue(this);
-        XmlRequest<Entry> xmlRequest = new XmlRequest<>(Request.Method.GET, URL, new Response.Listener<ArrayList<Entry>>() {
+        XmlRequest<Entry> xmlRequest = new XmlRequest<>(Request.Method.GET, Urls.STACK_OVERFLOW_URL, new Response.Listener<ArrayList<Entry>>() {
             @Override
             public void onResponse(ArrayList<Entry> response) {
                 StringBuilder out = new StringBuilder();

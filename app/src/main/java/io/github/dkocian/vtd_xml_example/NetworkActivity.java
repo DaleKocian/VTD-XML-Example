@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.dkocian.vtd_xml_example.model.Entry;
 import io.github.dkocian.vtd_xml_example.utils.StackOverflowXmlParser;
+import io.github.dkocian.vtd_xml_example.utils.Urls;
 
 /**
  * Created by dkocian on 3/30/2015.
@@ -40,7 +41,6 @@ import io.github.dkocian.vtd_xml_example.utils.StackOverflowXmlParser;
 public class NetworkActivity extends ActionBarActivity {
     public static final String WIFI = "Wi-Fi";
     public static final String ANY = "Any";
-    private static final String MY_URL = "http://stackoverflow.com/feeds/tag?tagnames=android&sort=newest";
     private static final int MAX_TIME_FOR_READ_TO_FINISH = 10000;
     private static final int MAX_TIME_TO_WAIT_TO_CONNECT = 15000;
     // The user's current network preference setting.
@@ -133,9 +133,9 @@ public class NetworkActivity extends ActionBarActivity {
     // Uses AsyncTask to download the XML feed from stackoverflow.com.
     public void loadPage() {
         if ((sPref.equals(ANY)) && (wifiConnected || mobileConnected)) {
-            new DownloadXmlTask().execute(MY_URL);
+            new DownloadXmlTask().execute(Urls.STACK_OVERFLOW_URL);
         } else if ((sPref.equals(WIFI)) && (wifiConnected)) {
-            new DownloadXmlTask().execute(MY_URL);
+            new DownloadXmlTask().execute(Urls.STACK_OVERFLOW_URL);
         } else {
             showErrorPage();
         }
