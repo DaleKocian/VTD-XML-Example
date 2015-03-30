@@ -30,6 +30,7 @@ import io.github.dkocian.vtd_xml_example.utils.JsonKeys;
  */
 public class XmlRequest<T extends XmlModel> extends Request<ArrayList<T>> {
     private static final String TAG = XmlRequest.class.getName();
+    private static final String TOTAL_NUM_OF_ELEMENT = "Total # of element ";
     private final Response.Listener<ArrayList<T>> listener;
     private final JSONObject parsingStructure;
     final Class<T> typeParameterClass;
@@ -108,7 +109,7 @@ public class XmlRequest<T extends XmlModel> extends Request<ArrayList<T>> {
                 entryList.add(instance);
                 ++count;
             }
-            Log.v(TAG, "Total # of element " + count);
+            Log.v(TAG, TOTAL_NUM_OF_ELEMENT + count);
         } catch (ParseException e) {
             Log.e(TAG, e.getMessage());
         } catch (PilotException e) {
