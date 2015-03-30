@@ -1,10 +1,11 @@
-package io.github.dkocian.vtd_xml_example;
+package io.github.dkocian.vtd_xml_example.activities;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.ActionBarActivity;
+
+import io.github.dkocian.vtd_xml_example.R;
 
 /**
  * This preference activity has in its manifest declaration an intent filter for

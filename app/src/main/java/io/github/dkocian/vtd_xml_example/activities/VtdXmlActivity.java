@@ -1,4 +1,4 @@
-package io.github.dkocian.vtd_xml_example;
+package io.github.dkocian.vtd_xml_example.activities;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -10,10 +10,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +21,8 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.github.dkocian.vtd_xml_example.MyApplication;
+import io.github.dkocian.vtd_xml_example.R;
 import io.github.dkocian.vtd_xml_example.model.Entry;
 import io.github.dkocian.vtd_xml_example.network.XmlRequest;
 import io.github.dkocian.vtd_xml_example.utils.Constants;
@@ -42,12 +42,12 @@ public class VtdXmlActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vtd_xml_ui);
         ButterKnife.inject(this);
-        RequestQueue queue = Volley.newRequestQueue(this);
         XmlRequest<Entry> xmlRequest = new XmlRequest<>(Request.Method.GET, Urls.STACK_OVERFLOW_URL, new Response.Listener<ArrayList<Entry>>() {
             @Override
             public void onResponse(ArrayList<Entry> response) {
                 StringBuilder out = new StringBuilder();
                 for (Entry entry : response) {
+                    entry.setSummary(entry.getSummary().replace("<pre>", "<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">"));
                     out.append("<html><body>")
                             .append("<b>Title: </b>")
                             .append(entry.getTitle())
@@ -62,6 +62,7 @@ public class VtdXmlActivity extends ActionBarActivity {
                             .append("</body></html>");
                 }
                 wvXml.loadData(out.toString(), Constants.TEXT_HTML, null);
+                wvXml.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
                 mProgressDialog.dismiss();
             }
         }, new Response.ErrorListener() {
@@ -73,7 +74,7 @@ public class VtdXmlActivity extends ActionBarActivity {
         mProgressDialog = ProgressDialog.show(this, PLEASE_WAIT, DOWNLOAD_IN_PROGRESS);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         mProgressDialog.setCancelable(true);
-        queue.add(xmlRequest);
+        MyApplication.addToQueue(xmlRequest);
     }
 
     @Override

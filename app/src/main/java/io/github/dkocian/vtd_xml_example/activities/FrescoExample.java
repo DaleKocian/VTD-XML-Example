@@ -1,4 +1,4 @@
-package io.github.dkocian.vtd_xml_example;
+package io.github.dkocian.vtd_xml_example.activities;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.github.dkocian.vtd_xml_example.R;
+import io.github.dkocian.vtd_xml_example.utils.Urls;
 
 /**
  * Created by dkocian on 3/30/2015.
@@ -25,7 +27,7 @@ public class FrescoExample extends ActionBarActivity {
         Fresco.initialize(this);
         setContentView(R.layout.fresco);
         ButterKnife.inject(this);
-        draweeView.setImageURI(Uri.parse("http://frescolib.org/static/fresco-logo.png"));
+        draweeView.setImageURI(Uri.parse(Urls.HTTP_FRESCOLIB_ORG_STATIC_FRESCO_LOGO_PNG));
     }
 
     @Override

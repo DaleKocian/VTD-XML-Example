@@ -1,4 +1,4 @@
-package io.github.dkocian.vtd_xml_example;
+package io.github.dkocian.vtd_xml_example.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,8 +31,10 @@ import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.github.dkocian.vtd_xml_example.R;
 import io.github.dkocian.vtd_xml_example.model.Entry;
 import io.github.dkocian.vtd_xml_example.utils.Constants;
+import io.github.dkocian.vtd_xml_example.utils.PrefKeys;
 import io.github.dkocian.vtd_xml_example.utils.StackOverflowXmlParser;
 import io.github.dkocian.vtd_xml_example.utils.Urls;
 
@@ -160,15 +162,14 @@ public class NetworkActivity extends ActionBarActivity {
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mmaa", Locale.US);
         // Checks whether the user set the preference to include summary text
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean pref = sharedPrefs.getBoolean("summaryPref", false);
+        boolean pref = sharedPrefs.getBoolean(PrefKeys.KEY_SUMMARY_PREF, false);
         StringBuilder htmlString = new StringBuilder();
         htmlString.append("<h3>").append(getResources().getString(R.string.page_title)).append("</h3>");
         htmlString.append("<em>").append(getResources().getString(R.string.updated)).append(Constants.SPACE).append(formatter.format(rightNow.getTime())).append("</em>");
         try {
             stream = downloadUrl(urlString);
             entries = stackOverflowXmlParser.parse(stream);
-            // Makes sure that the InputStream is closed after the app is
-            // finished using it.
+            // Makes sure that the InputStream is closed after the app is finished using it.
         } finally {
             if (stream != null) {
                 stream.close();

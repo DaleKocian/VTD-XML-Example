@@ -1,4 +1,4 @@
-package io.github.dkocian.vtd_xml_example;
+package io.github.dkocian.vtd_xml_example.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.widget.Button;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import io.github.dkocian.vtd_xml_example.R;
 
 /**
  * Created by dkocian on 3/30/2015.

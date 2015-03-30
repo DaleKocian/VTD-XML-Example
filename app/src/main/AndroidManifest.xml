@@ -8,11 +8,12 @@
 
     <application
         android:allowBackup="true"
+        android:name=".MyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -20,13 +21,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".VtdXmlActivity"
+            android:name=".activities.VtdXmlActivity"
             android:label="@string/app_name"/>
         <activity
-            android:name=".NetworkActivity"
+            android:name=".activities.NetworkActivity"
             android:label="Network Activity"/>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="Settings Activity"/>
+        <activity
+            android:name=".activities.FrescoExample"
+            android:label="@string/app_name"/>
     </application>
 </manifest>
