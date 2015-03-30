@@ -32,6 +32,7 @@ import java.util.Locale;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.dkocian.vtd_xml_example.model.Entry;
+import io.github.dkocian.vtd_xml_example.utils.Constants;
 import io.github.dkocian.vtd_xml_example.utils.StackOverflowXmlParser;
 import io.github.dkocian.vtd_xml_example.utils.Urls;
 
@@ -39,7 +40,7 @@ import io.github.dkocian.vtd_xml_example.utils.Urls;
  * Created by dkocian on 3/30/2015.
  */
 public class NetworkActivity extends ActionBarActivity {
-    public static final String WIFI = "Wi-Fi";
+    public static final String WIFI = Constants.WI_FI;
     public static final String ANY = "Any";
     private static final int MAX_TIME_FOR_READ_TO_FINISH = 10000;
     private static final int MAX_TIME_TO_WAIT_TO_CONNECT = 15000;
@@ -73,7 +74,7 @@ public class NetworkActivity extends ActionBarActivity {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         // Retrieves a string value for the preferences. The second parameter
         // is the default value to use if a preference value is not found.
-        sPref = sharedPrefs.getString("listPref", "Wi-Fi");
+        sPref = sharedPrefs.getString("listPref", Constants.WI_FI);
         updateConnectedFlags();
         // Only loads the page if refreshDisplay is true. Otherwise, keeps previous
         // display. For example, if the user has set "Wi-Fi only" in prefs and the
@@ -146,7 +147,7 @@ public class NetworkActivity extends ActionBarActivity {
         setContentView(R.layout.network_activity_ui);
         ButterKnife.inject(this);
         // The specified network connection is not available. Displays error message.
-        myWebView.loadData(getResources().getString(R.string.connection_error), "text/html", null);
+        myWebView.loadData(getResources().getString(R.string.connection_error), Constants.TEXT_HTML, null);
     }
 
     // Uploads XML from stackoverflow.com, parses it, and combines it with HTML markup. Returns HTML string.
@@ -162,7 +163,7 @@ public class NetworkActivity extends ActionBarActivity {
         boolean pref = sharedPrefs.getBoolean("summaryPref", false);
         StringBuilder htmlString = new StringBuilder();
         htmlString.append("<h3>").append(getResources().getString(R.string.page_title)).append("</h3>");
-        htmlString.append("<em>").append(getResources().getString(R.string.updated)).append(" ").append(formatter.format(rightNow.getTime())).append("</em>");
+        htmlString.append("<em>").append(getResources().getString(R.string.updated)).append(Constants.SPACE).append(formatter.format(rightNow.getTime())).append("</em>");
         try {
             stream = downloadUrl(urlString);
             entries = stackOverflowXmlParser.parse(stream);
@@ -214,6 +215,7 @@ public class NetworkActivity extends ActionBarActivity {
 
     // Implementation of AsyncTask used to download XML feed from stackoverflow.com.
     private class DownloadXmlTask extends AsyncTask<String, Void, String> {
+
         @Override
         protected String doInBackground(String... urls) {
             try {
@@ -230,7 +232,7 @@ public class NetworkActivity extends ActionBarActivity {
             setContentView(R.layout.network_activity_ui);
             ButterKnife.inject(NetworkActivity.this);
             // Displays the HTML string in the UI via a WebView
-            myWebView.loadData(result, "text/html", null);
+            myWebView.loadData(result, Constants.TEXT_HTML, null);
         }
     }
 
@@ -247,13 +249,11 @@ public class NetworkActivity extends ActionBarActivity {
             ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
             // Checks the user prefs and the network connection. Based on the result, decides
-            // whether
-            // to refresh the display or keep the current display.
+            // whether to refresh the display or keep the current display.
             // If the userpref is Wi-Fi only, checks to see if the device has a Wi-Fi connection.
             if (WIFI.equals(sPref) && networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                // If device has its Wi-Fi connection, sets refreshDisplay
-                // to true. This causes the display to be refreshed when the user
-                // returns to the app.
+                // If device has its Wi-Fi connection, sets refreshDisplay to true.
+                // This causes the display to be refreshed when the user returns to the app.
                 refreshDisplay = true;
                 Toast.makeText(context, R.string.wifi_connected, Toast.LENGTH_SHORT).show();
                 // If the setting is ANY network and there is a network connection
@@ -261,8 +261,7 @@ public class NetworkActivity extends ActionBarActivity {
             } else if (ANY.equals(sPref) && networkInfo != null) {
                 refreshDisplay = true;
                 // Otherwise, the app can't download content--either because there is no network
-                // connection (mobile or Wi-Fi), or because the pref setting is WIFI, and there
-                // is no Wi-Fi connection.
+                // connection (mobile or Wi-Fi), or because the pref setting is WIFI, and there is no Wi-Fi connection.
                 // Sets refreshDisplay to false.
             } else {
                 refreshDisplay = false;
