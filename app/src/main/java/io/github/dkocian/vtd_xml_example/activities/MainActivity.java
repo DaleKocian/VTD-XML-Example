@@ -19,6 +19,8 @@ public class MainActivity extends ActionBarActivity {
     Button btnLaunchVtd;
     @InjectView(R.id.btnLaunchPullParser)
     Button btnLaunchPullParser;
+    @InjectView(R.id.btnLaunchFresco)
+    Button btnLaunchFresco;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,5 +39,11 @@ public class MainActivity extends ActionBarActivity {
     public void onBtnLaunchPullParser(View view) {
         Intent networkActivity = new Intent(this, NetworkActivity.class);
         startActivity(networkActivity);
+    }
+
+    @OnClick(R.id.btnLaunchFresco)
+    public void onBtnLaunchFresco(View view) {
+        Intent frescoActivity = new Intent(this, FrescoExample.class);
+        startActivity(frescoActivity);
     }
 }

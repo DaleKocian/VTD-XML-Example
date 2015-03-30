@@ -14,4 +14,5 @@
     <string name="xml_error">Error parsing XML.</string>
     <string name="vtd_button_txt">Vtd XML Activity</string>
     <string name="xml_pull_parser_button_txt">Xml Pull Parser Activity</string>
+    <string name="fresco_btn_txt">Fresco activity</string>
 </resources>
