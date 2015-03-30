@@ -32,10 +32,10 @@ public class XmlRequest<T extends XmlModel> extends Request<ArrayList<T>> {
     private static final String TAG = XmlRequest.class.getName();
     private final Response.Listener<ArrayList<T>> listener;
     private final JSONObject parsingStructure;
-    final Class<? extends XmlModel> typeParameterClass;
+    final Class<T> typeParameterClass;
 
     public XmlRequest(int method, String url, Response.Listener<ArrayList<T>> listener, Response.ErrorListener errorListener,
-                      JSONObject parsingStructure, Class<? extends XmlModel> typeParameterClass) {
+                      JSONObject parsingStructure, Class<T> typeParameterClass) {
         super(method, url, errorListener);
         this.listener = listener;
         this.parsingStructure = parsingStructure;
@@ -76,15 +76,15 @@ public class XmlRequest<T extends XmlModel> extends Request<ArrayList<T>> {
                 JSONObject payload = new JSONObject();
                 for (int i = 0; i <= parsingStructure.length(); ++i) {
                     JSONObject nextJsonObject = elements.getJSONObject(i);
-                    String link;
+                    String text;
                     int val;
                     if (i == 0) {
-                        vn.toElement(VTDNav.FC, nextJsonObject.getString(JsonKeys.ELEMENT));//title
-                        val = vn.getText(); // get the index of the text (char data or CDATA)
-                        String title = "";
-                        if (val != -1) {
-                            title = vn.toNormalizedString(val);
-                            payload.put(nextJsonObject.getString(JsonKeys.ELEMENT), title);
+                        if (vn.toElement(VTDNav.FC, nextJsonObject.getString(JsonKeys.ELEMENT))) {
+                            val = vn.getText();
+                            if (val != -1) {
+                                text = vn.toNormalizedString(val);
+                                payload.put(nextJsonObject.getString(JsonKeys.ELEMENT), text);
+                            }
                         }
                     } else if (vn.toElement(VTDNav.NEXT_SIBLING, nextJsonObject.getString(JsonKeys.ELEMENT))) {
                         try {
@@ -92,14 +92,14 @@ public class XmlRequest<T extends XmlModel> extends Request<ArrayList<T>> {
                             JSONObject attr = attrs.getJSONObject(0);
                             val = vn.getAttrVal(attr.getString(JsonKeys.ATTR + 1));
                             if (val != -1) {
-                                link = vn.toNormalizedString(val);
-                                payload.put(attr.getString(JsonKeys.ATTR + 1), link);
+                                text = vn.toNormalizedString(val);
+                                payload.put(attr.getString(JsonKeys.ATTR + 1), text);
                             }
                         } catch (JSONException e) {
-                            val = vn.getText(); // get the index of the text (char data or CDATA)
+                            val = vn.getText();
                             if (val != -1) {
-                                link = vn.toNormalizedString(val);
-                                payload.put(nextJsonObject.getString(JsonKeys.ELEMENT), link);
+                                text = vn.toNormalizedString(val);
+                                payload.put(nextJsonObject.getString(JsonKeys.ELEMENT), text);
                             }
                         }
                     }
