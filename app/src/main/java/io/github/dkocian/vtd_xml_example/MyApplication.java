@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.Volley;
 
 import io.github.dkocian.vtd_xml_example.network.OkHttpStack;
@@ -25,6 +26,11 @@ public class MyApplication extends Application {
     }
 
     public static Request addToQueue(Request request) {
+        return getVolleyQueue().add(request);
+    }
+
+    public static Request addToQueue(Request request, RetryPolicy retryPolicy) {
+        request.setRetryPolicy(retryPolicy);
         return getVolleyQueue().add(request);
     }
 
