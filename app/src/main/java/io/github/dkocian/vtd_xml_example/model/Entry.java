@@ -14,9 +14,9 @@ public class Entry implements XmlModel {
     public static final String LINK = "link";
     public static final String HREF = "href";
     public static final String SUMMARY = "summary";
-    public String title;
-    public String link;
-    public String summary;
+    private String title;
+    private String link;
+    private String summary;
 
     public Entry() {
         // Needed for xml request to be able to grab a new instance
@@ -47,5 +47,29 @@ public class Entry implements XmlModel {
             }
         }
         return new Entry(title, link, summary);
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }

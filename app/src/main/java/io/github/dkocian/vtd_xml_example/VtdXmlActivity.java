@@ -3,11 +3,11 @@ package io.github.dkocian.vtd_xml_example;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,16 +25,17 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.dkocian.vtd_xml_example.model.Entry;
 import io.github.dkocian.vtd_xml_example.network.XmlRequest;
+import io.github.dkocian.vtd_xml_example.utils.Constants;
 import io.github.dkocian.vtd_xml_example.utils.JsonKeys;
 import io.github.dkocian.vtd_xml_example.utils.Urls;
 
 public class VtdXmlActivity extends ActionBarActivity {
-    private static final String TAG = VtdXmlActivity.class.getName();
     public static final String PLEASE_WAIT = "Please wait";
     public static final String DOWNLOAD_IN_PROGRESS = "Download in progress..";
+    private static final String TAG = VtdXmlActivity.class.getName();
+    @InjectView(R.id.wvXml)
+    WebView wvXml;
     private ProgressDialog mProgressDialog;
-    @InjectView(R.id.tvContent)
-    TextView tvContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +48,20 @@ public class VtdXmlActivity extends ActionBarActivity {
             public void onResponse(ArrayList<Entry> response) {
                 StringBuilder out = new StringBuilder();
                 for (Entry entry : response) {
-                    out.append("<b>Title: </b>");
-                    out.append(entry.title);
-                    out.append("<br/><b>Link: </b>");
-                    out.append(entry.link);
-                    out.append("<br/><b>Summary: </b>");
-                    out.append(entry.summary);
-                    out.append("<br/><br/>");
+                    out.append("<html><body>")
+                            .append("<b>Title: </b>")
+                            .append(entry.getTitle())
+                            .append("<br/><b>Link: </b><a href=\"")
+                            .append(entry.getLink())
+                            .append("\">")
+                            .append(entry.getLink())
+                            .append("</a>")
+                            .append("<br/><b>Summary: </b>")
+                            .append(entry.getSummary())
+                            .append("<br/><br/>")
+                            .append("</body></html>");
                 }
-                tvContent.setText(Html.fromHtml(out.toString()));
+                wvXml.loadData(out.toString(), Constants.TEXT_HTML, null);
                 mProgressDialog.dismiss();
             }
         }, new Response.ErrorListener() {
@@ -104,5 +110,14 @@ public class VtdXmlActivity extends ActionBarActivity {
             Log.e(TAG, e.getMessage());
         }
         return parsingStructure;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (wvXml != null && wvXml.canGoBack()) {
+            wvXml.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

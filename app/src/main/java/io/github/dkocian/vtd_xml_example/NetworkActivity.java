@@ -181,11 +181,11 @@ public class NetworkActivity extends ActionBarActivity {
         // a text summary.
         for (Entry entry : entries) {
             htmlString.append("<p><a href='");
-            htmlString.append(entry.link);
-            htmlString.append("'>").append(entry.title).append("</a></p>");
+            htmlString.append(entry.getLink());
+            htmlString.append("'>").append(entry.getTitle()).append("</a></p>");
             // If the user set the preference to include summary text, adds it to the display.
             if (pref) {
-                htmlString.append(entry.summary);
+                htmlString.append(entry.getSummary());
             }
         }
         return htmlString.toString();
