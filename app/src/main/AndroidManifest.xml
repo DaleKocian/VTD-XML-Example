@@ -24,6 +24,9 @@
             android:label="@string/app_name"/>
         <activity
             android:name=".NetworkActivity"
-            android:label="@string/app_name"/>
+            android:label="Network Activity"/>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Settings Activity"/>
     </application>
 </manifest>
