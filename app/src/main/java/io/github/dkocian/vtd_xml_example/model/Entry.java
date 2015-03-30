@@ -19,6 +19,7 @@ public class Entry implements XmlModel {
     public String summary;
 
     public Entry() {
+        // Needed for xml request to be able to grab a new instance
     }
 
     public Entry(String title, String link, String summary) {
