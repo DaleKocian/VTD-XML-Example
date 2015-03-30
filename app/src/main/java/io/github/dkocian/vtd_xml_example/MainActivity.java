@@ -1,7 +1,9 @@
 package io.github.dkocian.vtd_xml_example;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,22 +13,26 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.ximpleware.AutoPilot;
-import com.ximpleware.NavException;
-import com.ximpleware.ParseException;
-import com.ximpleware.PilotException;
-import com.ximpleware.VTDGen;
-import com.ximpleware.VTDNav;
-import com.ximpleware.XPathEvalException;
-import com.ximpleware.XPathParseException;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.github.dkocian.vtd_xml_example.model.Entry;
+import io.github.dkocian.vtd_xml_example.network.XmlRequest;
+import io.github.dkocian.vtd_xml_example.utils.JsonKeys;
 
 public class MainActivity extends ActionBarActivity {
     private static final String TAG = MainActivity.class.getName();
+    private static final String URL = "http://stackoverflow.com/feeds/tag?tagnames=android&sort=newest";
+    public static final String PLEASE_WAIT = "Please wait";
+    public static final String DOWNLOAD_IN_PROGRESS = "Download in progress..";
+    private ProgressDialog mProgressDialog;
     @InjectView(R.id.tvContent)
     TextView tvContent;
 
@@ -36,63 +42,32 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://stackoverflow.com/feeds/tag?tagnames=android&sort=newest";
-//        String url = "http://vtd-xml.sourceforge.net/codeSample/servers.xml";
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        tvContent.setText("Response is: " + response);
-                        VTDGen vg = new VTDGen();
-                        vg.setDoc(response.getBytes());
-                        try {
-                            vg.parse(true);
-                            VTDNav vn = vg.getNav();
-                            AutoPilot ap = new AutoPilot(vn);
-                            ap.selectXPath("/feed/entry");
-                            int count = 0;
-                            while (ap.evalXPath() != -1) {
-                                Log.v(TAG, "" + vn.getCurrentIndex() + " ");
-                                Log.v(TAG, "Element name ==> " + vn.toString(vn.getCurrentIndex()));
-                                int t = vn.getText(); // get the index of the text (char data or CDATA)
-                                if (t != -1) {
-                                    Log.v(TAG, " Text ==> " + vn.toNormalizedString(t));
-                                    System.out.println();
-                                }
-                                Log.v(TAG, "\n ============================== ");
-                                count++;
-                                if (vn.toElement(VTDNav.FIRST_CHILD, "title")) {
-                                    do {
-                                        t = vn.getText();
-                                        if (t != -1) {
-                                            String id = vn.toNormalizedString(t);
-                                            Log.v(TAG, "\ttitle:" + id);
-                                        }
-                                    } while (vn.toElement(VTDNav.NEXT_SIBLING, "title"));
-                                }
-                            }
-                            Log.v(TAG, "Total # of element " + count);
-                        } catch (ParseException e) {
-                            Log.e(TAG, e.getMessage());
-                        } catch (PilotException e) {
-                            Log.e(TAG, e.getMessage());
-                        } catch (NavException e) {
-                            Log.e(TAG, e.getMessage());
-                        } catch (XPathParseException e) {
-                            Log.e(TAG, e.getMessage());
-                        } catch (XPathEvalException e) {
-                            Log.e(TAG, e.getMessage());
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        XmlRequest<Entry> xmlRequest = new XmlRequest<>(Request.Method.GET, URL, new Response.Listener<ArrayList<Entry>>() {
+            @Override
+            public void onResponse(ArrayList<Entry> response) {
+                StringBuilder out = new StringBuilder();
+                for (Entry entry : response) {
+                    out.append("<b>Title: </b>");
+                    out.append(entry.title);
+                    out.append("<br/><b>Link: </b>");
+                    out.append(entry.link);
+                    out.append("<br/><b>Summary: </b>");
+                    out.append(entry.summary);
+                    out.append("<br/><br/>");
+                }
+                tvContent.setText(Html.fromHtml(out.toString()));
+                mProgressDialog.dismiss();
+            }
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                tvContent.setText("That didn't work!");
             }
-        });
+        }, getParsingStructure(), Entry.class);
         // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        mProgressDialog = ProgressDialog.show(this, PLEASE_WAIT, DOWNLOAD_IN_PROGRESS);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setCancelable(true);
+        queue.add(xmlRequest);
     }
 
     @Override
@@ -113,5 +88,21 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private JSONObject getParsingStructure() {
+        JSONObject parsingStructure = new JSONObject();
+        try {
+            parsingStructure.put(JsonKeys.ROOT, JsonKeys.ENTRY);
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(new JSONObject().put(JsonKeys.ELEMENT, Entry.TITLE));
+            jsonArray.put(new JSONObject().put(JsonKeys.ELEMENT, Entry.LINK).put(JsonKeys.ATTRS, new JSONArray().put(new JSONObject().put
+                    (JsonKeys.ATTR + 1, Entry.HREF))));
+            jsonArray.put(new JSONObject().put(JsonKeys.ELEMENT, Entry.SUMMARY));
+            parsingStructure.put(JsonKeys.ELEMENTS, jsonArray);
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return parsingStructure;
     }
 }
